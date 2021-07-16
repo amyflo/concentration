@@ -16,30 +16,10 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         VStack{
-            HStack{
-                CardView()
-                CardView()
-                CardView()
-                CardView()
-            }
-            HStack{
-                CardView()
-                CardView()
-                CardView()
-                CardView()
-            }
-            HStack{
-                CardView()
-                CardView()
-                CardView()
-                CardView()
-            }
-            HStack{
-                CardView()
-                CardView()
-                CardView()
-                CardView()
-            }
+            CardRow()
+            CardRow()
+            CardRow()
+            CardRow()
         }
         .padding(.horizontal)
         .foregroundColor(.blue)
@@ -53,6 +33,19 @@ struct CardView: View{
                 .stroke(lineWidth: 3)
             Text("🤡")
                 .font(.largeTitle)
+        }
+    }
+}
+
+struct CardRow: View{
+    var body: some View{
+        ZStack{
+            HStack{
+                CardView()
+                CardView()
+                CardView()
+                CardView()
+            }
         }
     }
 }
