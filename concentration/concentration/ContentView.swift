@@ -14,38 +14,83 @@ import SwiftUI
 // Swift is a functional programming language
 
 struct ContentView: View {
-    var body: some View {
+    var emojis = ["😘", "😗", "😙", "😚", "😋", "😛", "😝", "😜", "🤪", "🤨", "🧐", "🤓", "😎", "🥸", "🤩", "🥳", "😏", "😒", "😞", "😔", "😟", "😕", "🙁", "☹️", "😣", "😖", "😫", "😩", "🥺", "😢", "😭", "😤", "😠"]
+    @State var emojiCount = 15
+    
+    var body: some View{
         VStack{
-            CardRow()
-            CardRow()
-            CardRow()
-            CardRow()
+            Text("Memorize!")
+                .font(.title)
+            
+            ScrollView{
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))]){
+                    ForEach(emojis[0..<emojiCount], id: \.self) {
+                        emoji in CardView(content: emoji)
+                            .aspectRatio(2/3, contentMode: .fit)
+                    }
+                }
+            }.foregroundColor(.red)
+            
+            Spacer()
+            
+            HStack{
+                remove
+//                Spacer()
+//                weather
+                Spacer()
+                add
+            }
+            .font(.largeTitle)
+            .padding(.horizontal)
         }
         .padding(.horizontal)
-        .foregroundColor(.blue)
+    }
+    var weather: some View{
+        Button{
+            if emojiCount < emojis.count{
+                emojiCount += 1
+            }
+        } label: {
+            Image(systemName: "sun.min")
+        }
+    }
+    
+    var add: some View{
+        Button{
+            if emojiCount < emojis.count{
+                emojiCount += 1
+            }
+        } label: {
+            Image(systemName: "plus.circle")
+        }
+    }
+    
+    var remove: some View{
+        Button{
+            if emojiCount > 1 {
+                emojiCount -= 1}
+        } label: {
+            Image(systemName: "minus.circle")
+        }
     }
 }
 
 struct CardView: View{
+    @State var faceUp: Bool = true
+    var content: String
+    
     var body: some View{
         ZStack {
-            RoundedRectangle(cornerRadius: 20)
-                .stroke(lineWidth: 3)
-            Text("🤡")
-                .font(.largeTitle)
-        }
-    }
-}
-
-struct CardRow: View{
-    var body: some View{
-        ZStack{
-            HStack{
-                CardView()
-                CardView()
-                CardView()
-                CardView()
+            let shape = RoundedRectangle(cornerRadius: 20)
+            if faceUp{
+                shape.fill().foregroundColor(.white)
+                shape.strokeBorder(lineWidth: 3)
+                Text(content).font(.largeTitle)
+            } else {
+                shape.fill()
             }
+        }.onTapGesture{
+            faceUp = !faceUp
         }
     }
 }
@@ -54,5 +99,7 @@ struct CardRow: View{
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+//        ContentView()
+//            .preferredColorScheme(.dark)
     }
 }
