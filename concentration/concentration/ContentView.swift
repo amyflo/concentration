@@ -13,18 +13,28 @@ import SwiftUI
 // A view is just a rectangular area on screen
 // Swift is a functional programming language
 
+// Show a different number of cards and chooses between three sets of arrays (weather, vehicles, faces)
 struct ContentView: View {
-    var emojis = ["😘", "😗", "😙", "😚", "😋", "😛", "😝", "😜", "🤪", "🤨", "🧐", "🤓", "😎", "🥸", "🤩", "🥳", "😏", "😒", "😞", "😔", "😟", "😕", "🙁", "☹️", "😣", "😖", "😫", "😩", "🥺", "😢", "😭", "😤", "😠"]
-    @State var emojiCount = 15
+    var weather_emojis = ["🌤", "⛅", "🌥", "🌦", "☁", "🌧", "⛈", "🌩", "🌞", "⚡", "🌨", "☃", "⛄", "🌬", "💨", "🌪", "🌫", "🌈", "☔", "💧", "💦", "🌊", "🧣", "🧤", "🌂"]
     
-    var body: some View{
+    let vehicle_emojis = ["🚗", "🚙", "🚕", "🛺", "🚌", "🚎", "🏎", "🚓", "🚑", "🚒", "🚐", "🛻", "🚚", "🚛", "🚜", "🏍", "🛵", "🚲", "🦼", "🦽", "🛴", "🛹", "🛼", "🚨", "🚔", "🚍", "🚘", "🚖", "🚡", "🚠", "🚟", "🚃", "🚋", "🚝", "🚄", "🚅", "🚈", "🚞", "🚂", "🚆", "🚇", "🚊", "🚉", "🚁", "🛩", "✈", "🛫", "🛬", "🪂", "💺", "🛰", "🚀", "🛸", "🛶", "⛵", "🛥", "🚤", "⛴", "🛳", "🚢", "⚓"]
+    
+    var face_emojis = ["😘", "😗", "😙", "😚", "😋", "😛", "😝", "😜", "🤪", "🤨", "🧐", "🤓", "😎", "🥸", "🤩", "🥳", "😏", "😒", "😞", "😔", "😟", "😕", "🙁", "☹️", "😣", "😖", "😫", "😩", "🥺", "😢", "😭", "😤", "😠"]
+    
+    // setting default array to weather emojis
+    @State var emojis: Array<String> = ["🌤", "⛅", "🌥", "🌦", "☁", "🌧", "⛈", "🌩", "🌞", "⚡", "🌨", "☃", "⛄", "🌬", "💨", "🌪", "🌫", "🌈", "☔", "💧", "💦", "🌊", "🧣", "🧤", "🌂"]
+    
+    var body: some View {
         VStack{
             Text("Memorize!")
                 .font(.title)
             
             ScrollView{
+                // random number of cards
+                let emojiCount = Int.random(in: 8...(emojis.count - 1))
+                
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))]){
-                    ForEach(emojis[0..<emojiCount], id: \.self) {
+                    ForEach(emojis[0...emojiCount], id: \.self) {
                         emoji in CardView(content: emoji)
                             .aspectRatio(2/3, contentMode: .fit)
                     }
@@ -33,44 +43,56 @@ struct ContentView: View {
             
             Spacer()
             
+            // Buttons
             HStack{
-                remove
-//                Spacer()
-//                weather
+                weather
                 Spacer()
-                add
+                vehicles
+                Spacer()
+                face
             }
             .font(.largeTitle)
             .padding(.horizontal)
         }
         .padding(.horizontal)
     }
+    
+    //  Whenever face button is pressed, sets emojis array to weather
     var weather: some View{
         Button{
-            if emojiCount < emojis.count{
-                emojiCount += 1
-            }
+            emojis = weather_emojis.shuffled()
         } label: {
-            Image(systemName: "sun.min")
+            VStack{
+                Image(systemName: "sun.min")
+                Text("Weather")
+                    .font(.caption)
+            }
         }
     }
     
-    var add: some View{
+    //  Whenever face button is pressed, sets emojis array to vehicles
+    var vehicles: some View{
         Button{
-            if emojiCount < emojis.count{
-                emojiCount += 1
-            }
+            emojis = vehicle_emojis.shuffled()
         } label: {
-            Image(systemName: "plus.circle")
+            VStack{
+                Image(systemName: "car")
+                Text("Vehicles")
+                    .font(.caption)
+            }
         }
     }
     
-    var remove: some View{
+    //  Whenever face button is pressed, sets emojis array to cars
+    var face: some View{
         Button{
-            if emojiCount > 1 {
-                emojiCount -= 1}
+            emojis = face_emojis.shuffled()
         } label: {
-            Image(systemName: "minus.circle")
+            VStack{
+                Image(systemName: "eyes")
+                Text("Faces")
+                    .font(.caption)
+            }
         }
     }
 }
