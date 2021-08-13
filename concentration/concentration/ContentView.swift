@@ -13,106 +13,62 @@ import SwiftUI
 // A view is just a rectangular area on screen
 // Swift is a functional programming language
 
+// @ State is how the UI is managing itself
+
+// observable projects use @ pubish
+// toggle - don't need anywhere else @state
+// global variable that is acccessed - view model - use @ Publish
+// @ state are in your view as a private var
+
+// @ state - if you're in content view for a modal - @State private var
+// inside the lcass
+// if if's in an observable object - use public @ publish
+// tutorial - MMVM - goes into signup
+
 // Show a different number of cards and chooses between three sets of arrays (weather, vehicles, faces)
 struct ContentView: View {
-    var weather_emojis = ["🌤", "⛅", "🌥", "🌦", "☁", "🌧", "⛈", "🌩", "🌞", "⚡", "🌨", "☃", "⛄", "🌬", "💨", "🌪", "🌫", "🌈", "☔", "💧", "💦", "🌊", "🧣", "🧤", "🌂"]
-    
-    let vehicle_emojis = ["🚗", "🚙", "🚕", "🛺", "🚌", "🚎", "🏎", "🚓", "🚑", "🚒", "🚐", "🛻", "🚚", "🚛", "🚜", "🏍", "🛵", "🚲", "🦼", "🦽", "🛴", "🛹", "🛼", "🚨", "🚔", "🚍", "🚘", "🚖", "🚡", "🚠", "🚟", "🚃", "🚋", "🚝", "🚄", "🚅", "🚈", "🚞", "🚂", "🚆", "🚇", "🚊", "🚉", "🚁", "🛩", "✈", "🛫", "🛬", "🪂", "💺", "🛰", "🚀", "🛸", "🛶", "⛵", "🛥", "🚤", "⛴", "🛳", "🚢", "⚓"]
-    
-    var face_emojis = ["😘", "😗", "😙", "😚", "😋", "😛", "😝", "😜", "🤪", "🤨", "🧐", "🤓", "😎", "🥸", "🤩", "🥳", "😏", "😒", "😞", "😔", "😟", "😕", "🙁", "☹️", "😣", "😖", "😫", "😩", "🥺", "😢", "😭", "😤", "😠"]
-    
-    // setting default array to weather emojis
-    @State var emojis: Array<String> = ["🌤", "⛅", "🌥", "🌦", "☁", "🌧", "⛈", "🌩", "🌞", "⚡", "🌨", "☃", "⛄", "🌬", "💨", "🌪", "🌫", "🌈", "☔", "💧", "💦", "🌊", "🧣", "🧤", "🌂"]
-    
-    var body: some View {
+    @ObservedObject var viewModel: EmojiConcentrationGame
+
+    var body: some View{
+        
         VStack{
-            Text("Memorize!")
+            Text("Concentration")
                 .font(.title)
             
             ScrollView{
                 // random number of cards
-                let emojiCount = Int.random(in: 8...(emojis.count - 1))
+//                let emojiCount = Int.random(in: 8...(emojis.count - 1))
                 
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))]){
-                    ForEach(emojis[0...emojiCount], id: \.self) {
-                        emoji in CardView(content: emoji)
+                    ForEach(viewModel.cards) {
+                        card in CardView(card: card)
                             .aspectRatio(2/3, contentMode: .fit)
+                            .onTapGesture {
+                                viewModel.choose(card)
+                            }
                     }
                 }
             }.foregroundColor(.red)
-            
-            Spacer()
-            
-            // Buttons
-            HStack{
-                weather
-                Spacer()
-                vehicles
-                Spacer()
-                face
-            }
-            .font(.largeTitle)
-            .padding(.horizontal)
         }
         .padding(.horizontal)
-    }
-    
-    //  Whenever face button is pressed, sets emojis array to weather
-    var weather: some View{
-        Button{
-            emojis = weather_emojis.shuffled()
-        } label: {
-            VStack{
-                Image(systemName: "sun.min")
-                Text("Weather")
-                    .font(.caption)
-            }
-        }
-    }
-    
-    //  Whenever face button is pressed, sets emojis array to vehicles
-    var vehicles: some View{
-        Button{
-            emojis = vehicle_emojis.shuffled()
-        } label: {
-            VStack{
-                Image(systemName: "car")
-                Text("Vehicles")
-                    .font(.caption)
-            }
-        }
-    }
-    
-    //  Whenever face button is pressed, sets emojis array to cars
-    var face: some View{
-        Button{
-            emojis = face_emojis.shuffled()
-        } label: {
-            VStack{
-                Image(systemName: "eyes")
-                Text("Faces")
-                    .font(.caption)
-            }
-        }
     }
 }
 
 struct CardView: View{
-    @State var faceUp: Bool = true
-    var content: String
+    var card: ConcentrationGame<String>.Card
     
     var body: some View{
         ZStack {
             let shape = RoundedRectangle(cornerRadius: 20)
-            if faceUp{
+            if card.isFaceUp{
                 shape.fill().foregroundColor(.white)
                 shape.strokeBorder(lineWidth: 3)
-                Text(content).font(.largeTitle)
+                Text(card.content).font(.largeTitle)
+            }else if card.isMatched{
+                shape.opacity(0)
             } else {
                 shape.fill()
             }
-        }.onTapGesture{
-            faceUp = !faceUp
         }
     }
 }
@@ -120,8 +76,9 @@ struct CardView: View{
 // This is the content preview
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
-//        ContentView()
-//            .preferredColorScheme(.dark)
+        let game = EmojiConcentrationGame()
+        ContentView(viewModel: game)
+        ContentView(viewModel: game)
+            .preferredColorScheme(.dark)
     }
 }
